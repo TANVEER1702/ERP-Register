@@ -6,13 +6,19 @@ import { InputField } from "@/components/inputField";
 import { Button } from "@/components/buttons";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+interface FormField {
+  column_name: string;
+  column_label: string;
+  interface_type?: "text" | "password" | "number" | "email" | "tel" | "checkbox" | "radio" | "select";
+}
 
-export default function Form({ formFields }: { formFields: any[] }) {
-  const [formData, setFormData] = useState(() =>
-    formFields.reduce((acc: any, field: any) => {
+
+export default function Form({ formFields }: { formFields: FormField[]}) {
+  const [formData, setFormData] = useState<Record<string, string>>(() =>
+    formFields.reduce((acc, field) => {
       acc[field.column_name] = "";
       return acc;
-    }, {})
+    }, {} as Record<string, string>)
   );
 
   const [showPassword, setshowPassword] = useState<{ [key: number]: boolean }>(
@@ -26,10 +32,12 @@ export default function Form({ formFields }: { formFields: any[] }) {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev: any) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => {
+      return ({
+        ...prev,
+        [name]: value,
+      });
+    });
 
     setFormErrors((prev) => ({
       ...prev,

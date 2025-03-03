@@ -1,5 +1,5 @@
 "use client";
-import { useState, ChangeEvent } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { InputField } from "@/components/inputField";
 import { Button } from "@/components/buttons";
@@ -8,26 +8,32 @@ import Image from "next/image";
 import Loginimg from "../../../public/login.webp";
 import { Eye, EyeOff } from "lucide-react";
 
-export default function Login({ Loginfield }: { Loginfield: any[] }) {
-  const [formData, setFormData] = useState(() =>
-    Loginfield.reduce((acc: any, field: any) => {
+interface Loginfield {
+  column_name: string;
+  column_label: string;
+  interface_type?: "text" | "password" | "number" | "email" | "tel" | "checkbox" | "radio" | "select"; // Optional field
+}
+
+
+export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
+  const [formData, setFormData] = useState<Record<string, string>>(() =>
+    Loginfield.reduce((acc, field) => {
       acc[field.column_name] = "";
       return acc;
-    }, {})
+    }, {} as Record<string, string>)
   );
 
   const [errors, setErrors] = useState<string | null>(null);
   const [showPassword, setshowPassword] = useState<{ [key: number]: boolean }>(
     {}
   );
-  const [formErrors, setFormErrors] = useState<any>({});
   const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev: any) => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -60,7 +66,7 @@ export default function Login({ Loginfield }: { Loginfield: any[] }) {
       } else {
         setErrors(data.massage || "Invalid Email or Password");
       }
-    } catch (error) {
+    } catch{
       setErrors("Somthing went wrong. Please try again letter");
     }
   };
@@ -75,7 +81,7 @@ export default function Login({ Loginfield }: { Loginfield: any[] }) {
         <h1 className="text-2xl text-center font-semibold text-gray-700 mb-6 ">
           ERP Login
         </h1>
-        {Loginfield.map((field: any, index) => (
+        {Loginfield.map((field, index) => (
           <div key={field.column_name}>
             <InputField
               name={field.column_name}
@@ -91,7 +97,7 @@ export default function Login({ Loginfield }: { Loginfield: any[] }) {
               value={formData[field.column_name] || ""}
               onChange={handleChange}
               required
-              errorMessage={formErrors[field.column_name]}
+              errorMessage=""
             />
             {field.interface_type === "password" && (
               <button
@@ -102,6 +108,7 @@ export default function Login({ Loginfield }: { Loginfield: any[] }) {
                 {showPassword[index] ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             )}
+             {errors && <p className="text-red-500 text-sm text-center">{errors}</p>}
           </div>
         ))}
         <div className="flex justify-center w-full mt-4">

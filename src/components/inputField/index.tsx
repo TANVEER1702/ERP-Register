@@ -1,12 +1,19 @@
-
-import React, { FocusEventHandler, useState } from 'react';
-import PhoneInput from "react-phone-input-2";
+import React, { useState } from "react";
 import "react-phone-input-2/lib/style.css";
 
 interface InputProps {
   name: string; // Name of the input
   label: string; // Label for the input
-  type?: 'text' | 'number' | 'checkbox' | 'radio' | 'email' | 'select' | 'tel' | 'password'| 'password'; // Input type (e.g., text, email, password)
+  type?:
+    | "text"
+    | "number"
+    | "checkbox"
+    | "radio"
+    | "email"
+    | "select"
+    | "tel"
+    | "password"
+    | "password"; // Input type (e.g., text, email, password)
   value?: string | number | string[] | boolean; // Current value of the input
   placeholder?: string; // Placeholder text
   required?: boolean; // Whether the input is required
@@ -18,7 +25,9 @@ interface InputProps {
   disabled?: boolean; // Disable the input
   readOnly?: boolean; // Read only the input
   defaultValue?: string; // Default value for the input
-  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void; // Change event handler
+  onChange?: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => void; // Change event handler
   validate?: (value: string | number | string[] | boolean) => string | null; // Validation function (returns error or null)
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void; // Blur event handler
   onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void; // KeyUp event handler
@@ -28,29 +37,27 @@ interface InputProps {
 export const InputField: React.FC<InputProps> = ({
   name,
   label,
-  type = 'text',
+  type = "text",
   value,
   onChange,
   onBlur,
   onKeyUp,
   onFocus,
-  placeholder = '',
+  placeholder = "",
   required = false,
   readOnly = false,
   minLength,
   maxLength,
   pattern,
-  errorMessage = '',
-  defaultValue = '',
-  className = '',
+  errorMessage = "",
+  defaultValue = "",
+  className = "",
   disabled = false,
 }) => {
-  
-  
   const [error, setError] = useState<string | null>(null);
   const validateInput = (inputValue: string): string | null => {
     if (required && !inputValue) {
-      return 'This field is required.';
+      return "This field is required.";
     }
     if (minLength && inputValue.length < minLength) {
       return `Minimum length is ${minLength} characters.`;
@@ -75,7 +82,7 @@ export const InputField: React.FC<InputProps> = ({
     const validationError = validateInput(inputValue);
     setError(validationError); // Update error state on keyup
   };
-  const handleOnFocus= (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleOnFocus = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const inputValue = (e.target as HTMLInputElement).value;
     const validationError = validateInput(inputValue);
     setError(validationError); // Update error state on keyup
@@ -89,18 +96,22 @@ export const InputField: React.FC<InputProps> = ({
     readOnly,
     disabled,
     className: `border rounded-md px-4 py-2 focus:outline-none ${
-      error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+      error
+        ? "border-red-500 focus:ring-red-500"
+        : "border-gray-300 focus:ring-blue-500"
     } ${className}`,
     onBlur: handleBlur,
     onKeyUp: handleKeyUp,
-    onFocus: handleOnFocus
+    onFocus: handleOnFocus,
   };
 
   if (value !== undefined) {
     // Controlled input (using `value` and `onChange`)
     return (
       <div className={`flex flex-col w-full`}>
-        <label className="mb-1 mt-2 text-sm font-medium text-gray-700">{label}</label>
+        <label className="mb-1 mt-2 text-sm font-medium text-gray-700">
+          {label}
+        </label>
         {/* {type === 'number' && <div className="w-full max-w-full">
           <PhoneInput
                country={"in"}
@@ -118,13 +129,13 @@ export const InputField: React.FC<InputProps> = ({
                 
               } */}
         <input
-          {...inputProps} 
-          // @ts-ignore
+          {...inputProps}
+          // @ts-expect-error: Type issue with external library
           value={value}
           onChange={onChange}
           onBlur={onBlur}
           onKeyUp={onKeyUp}
-          // @ts-ignore
+          // @ts-expect-error: Type issue with external library
           onFocus={onFocus}
         />
         {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
@@ -134,12 +145,11 @@ export const InputField: React.FC<InputProps> = ({
     // Uncontrolled input (using `defaultValue`)
     return (
       <div className={`flex flex-col`}>
-        <label className="mb-1 mt-2 text-sm font-medium text-gray-700">{label}</label>
-        {/* @ts-ignore */}
-        <input
-          {...inputProps}
-          defaultValue={defaultValue}
-        />
+        <label className="mb-1 mt-2 text-sm font-medium text-gray-700">
+          {label}
+        </label>
+        {/* @ts-expect-error: Type issue with external library */}
+        <input {...inputProps} defaultValue={defaultValue} />
         {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
       </div>
     );

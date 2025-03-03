@@ -3,8 +3,8 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 
-export default function page() {
-    const [phone, setPhone] = useState<any>();
+export default function PhoneInputs() {
+    const [phone, setPhone] = useState();
   return (
     <div>
        <div className="w-full max-w-full">
