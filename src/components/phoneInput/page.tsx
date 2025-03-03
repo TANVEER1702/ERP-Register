@@ -4,7 +4,7 @@ import "react-phone-input-2/lib/style.css";
 
 
 export default function PhoneInputs() {
-    const [phone, setPhone] = useState();
+    const [phone, setPhone] = useState<string>("");
   return (
     <div>
        <div className="w-full max-w-full">
