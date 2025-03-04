@@ -6,6 +6,9 @@ import { InputField } from "@/components/inputField";
 import { Button } from "@/components/buttons";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import Loginimg from "../../../public/Register.webp";
 interface FormField {
   column_name: string;
   column_label: string;
@@ -103,7 +106,12 @@ export default function Form({ formFields }: { formFields: FormField[]}) {
   };
 
   return (
-    <div className="w-full max-w-xl p-6 bg-gray-50 rounded-2xl">
+    <div className="flex items-center justify-center min-h-svh px-10 sm:px-5  bg-gray-100">
+      <div className="hidden md:flex md:w-1/2 lg:w-2/5 justify-center items-center">
+        <Image src={Loginimg} alt="Login" className="w-3/4 h-auto" />
+      </div>
+
+      <div className="w-full max-w-md bg-white p-8 rounded-lg  md:w-1/2 lg:w-2/5">
       <h1 className="text-center text-2xl font-bold">Register Form</h1>
 
       <div className="grid grid-cols-1 gap-5">
@@ -157,6 +165,8 @@ export default function Form({ formFields }: { formFields: FormField[]}) {
       <div className="mt-3 flex items-center justify-center">
         <Button label="Submit" variant="primary" onClick={handleSubmit} />
       </div>
+      </div>
     </div>
+    
   );
 }

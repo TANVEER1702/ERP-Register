@@ -5,7 +5,7 @@ import { InputField } from "@/components/inputField";
 import { Button } from "@/components/buttons";
 import Link from "next/link";
 import Image from "next/image";
-import Loginimg from "../../../public/login.webp";
+import Loginimg from "../../../public/LoginSvg.jpg";
 import { Eye, EyeOff } from "lucide-react";
 
 interface Loginfield {
@@ -74,7 +74,7 @@ export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
   return (
     <div className="flex items-center justify-center min-h-svh px-10 sm:px-5  bg-gray-100">
       <div className="hidden md:flex md:w-1/2 lg:w-2/5 justify-center items-center">
-        <Image src={Loginimg} alt="Login" className="w-3/4 h-auto" />
+        <Image src={Loginimg} alt="Login" className="w-3/4 h-auto mix-blend-multiply" />
       </div>
 
       <div className="w-full max-w-md bg-white p-8 rounded-lg  md:w-1/2 lg:w-2/5">
@@ -82,7 +82,7 @@ export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
           ERP Login
         </h1>
         {Loginfield.map((field, index) => (
-          <div key={field.column_name}>
+          <div key={field.column_name} className="relative">
             <InputField
               name={field.column_name}
               label={field.column_label}

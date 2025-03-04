@@ -12,7 +12,7 @@ export default async function Registerpage() {
   const formFields = await getFormFields();
 
   return (
-    <div className="flex flex-col items-center justify-center my-10 px-10">
+    <div className="">
       <Register formFields={formFields} />
     </div>
   );
