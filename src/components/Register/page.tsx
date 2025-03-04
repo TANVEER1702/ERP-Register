@@ -6,7 +6,6 @@ import { InputField } from "@/components/inputField";
 import { Button } from "@/components/buttons";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 import Loginimg from "../../../public/Register.webp";
 interface FormField {
