@@ -7,6 +7,8 @@ import { Button } from "@/components/buttons";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import ProgressBar from "../CircleProgressBar";
+import PhoneInputs from "../phoneInput/page";
+
 interface FormField {
   column_name: string;
   column_label: string;
@@ -128,6 +130,31 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     }
     if (step < totalSteps) setStep(step + 1);
   }
+  
+  function nextStep1(): void {
+    const errors: { [key: string]: string[] } = {};
+
+    
+    fieldsForStep2.forEach((field) => {
+      if (!formData[field.column_name]) {
+        errors[field.column_name] = [`${field.column_label} is required`];
+      }
+    });
+   const passwordField = fieldsForStep2.find(f => f.interface_type === "password" && f.column_name === "users_password");
+const confirmPasswordField = fieldsForStep2.find(f => f.interface_type === "password" && f.column_name === "custom_column_12");
+
+if (passwordField && confirmPasswordField) {
+  if (formData["users_password"] !== formData["custom_column_12"]) {
+    errors["custom_column_12"] = ["Passwords do not match"];
+  }
+}
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    if (step < totalSteps) setStep(step + 1);
+  }
 
   const totalSteps = 3;
 
@@ -138,12 +165,12 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
   const fieldsForStep1 = formFields.filter(
     (field) => field.interface_type !== "password"
   );
-  console.log("Step 1 Fields:", fieldsForStep1);
+ 
 
   const fieldsForStep2 = formFields.filter(
     (field) => field.interface_type === "password"
   );
-  console.log("Step 2 Fields:", fieldsForStep2);
+  
 
   return (
     <div className="flex flex-col items-center justify-center  my-10 px-10">
@@ -155,27 +182,52 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
           {step === 1 && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {fieldsForStep1.map((field) => (
-                  <div key={field.column_name} className="relative">
-                    <InputField
-                      name={field.column_name}
-                      type={field.interface_type}
-                      placeholder={field.column_label}
-                      value={formData[field.column_name] || ""}
-                      onChange={handleChange}
-                      required
-                      label={field.column_label}
-                      errorMessage=""
-                    />
-
-                    {formErrors[field.column_name] &&
-                      formErrors[field.column_name].map((errMsg, index) => (
-                        <p key={index} className="text-red-500 text-xl mt-1 ">
-                          {errMsg}
-                        </p>
-                      ))}
-                  </div>
-                ))}
+               
+                  {fieldsForStep1.map((field) => (
+                    <div key={field.column_name} className="relative">
+                      {field.column_name === "users_phone" ? (
+                        
+                        <PhoneInputs
+                        label ={field.column_label}
+                          country={"in"}
+                          value={formData[field.column_name] || ""}
+                          onChange={(phone) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              [field.column_name]: phone,
+                            }))
+                          }
+                          containerStyle={{ width: "100%" }}
+                          inputStyle={{
+                            width: "100%",
+                            height: "40px",
+                            borderRadius: "6px",
+                          }}
+                          buttonClass="w-12 h-10 flex items-center justify-center border rounded"
+                        />
+                      ) : (
+                        <InputField
+                          name={field.column_name}
+                          type={field.interface_type}
+                          placeholder={field.column_label}
+                          value={formData[field.column_name] || ""}
+                          onChange={handleChange}
+                          required
+                          label={field.column_label}
+                          errorMessage=""
+                        />
+                      )}
+                      
+                      {formErrors[field.column_name] &&
+                        formErrors[field.column_name].map((errMsg, index) => (
+                          <p key={index} className="text-red-500 text-sm mt-1">
+                            {errMsg}
+                          </p>
+                        ))}
+                    </div>
+                  ))}
+                  
+                
               </div>
               {message && typeof message === "string" && (
                 <div
@@ -251,7 +303,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                 )}
                 <div className="flex justify-between mt-4">
                   <Button label="Back" onClick={prevStep} variant="secondary" />
-                  <Button label="Next" onClick={nextStep} variant="primary" />
+                  <Button label="Next" onClick={nextStep1} variant="primary" />
                 </div>
               </div>
             </>
