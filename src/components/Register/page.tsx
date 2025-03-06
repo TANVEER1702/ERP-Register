@@ -6,16 +6,23 @@ import { InputField } from "@/components/inputField";
 import { Button } from "@/components/buttons";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import Image from "next/image";
-import Loginimg from "../../../public/Register.webp";
+import ProgressBar from "../CircleProgressBar";
 interface FormField {
   column_name: string;
   column_label: string;
-  interface_type?: "text" | "password" | "number" | "email" | "tel" | "checkbox" | "radio" | "select";
+  interface_type?:
+    | "text"
+    | "password"
+    | "number"
+    | "email"
+    | "tel"
+    | "checkbox"
+    | "radio"
+    | "select";
+  ordering_number?: number;
 }
 
-
-export default function Form({ formFields }: { formFields: FormField[]}) {
+export default function Form({ formFields }: { formFields: FormField[] }) {
   const [formData, setFormData] = useState<Record<string, string>>(() =>
     formFields.reduce((acc, field) => {
       acc[field.column_name] = "";
@@ -26,6 +33,7 @@ export default function Form({ formFields }: { formFields: FormField[]}) {
   const [showPassword, setshowPassword] = useState<{ [key: number]: boolean }>(
     {}
   );
+  const [step, setStep] = useState(1);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string[] }>({});
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -35,10 +43,10 @@ export default function Form({ formFields }: { formFields: FormField[]}) {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => {
-      return ({
+      return {
         ...prev,
         [name]: value,
-      });
+      };
     });
 
     setFormErrors((prev) => ({
@@ -104,68 +112,165 @@ export default function Form({ formFields }: { formFields: FormField[]}) {
     }
   };
 
+  function nextStep(): void {
+    const errors: { [key: string]: string[] } = {};
+
+    
+    fieldsForStep1.forEach((field) => {
+      if (!formData[field.column_name]) {
+        errors[field.column_name] = [`${field.column_label} is required`];
+      }
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    if (step < totalSteps) setStep(step + 1);
+  }
+
+  const totalSteps = 3;
+
+  function prevStep(): void {
+    if (step > 1) setStep(step - 1);
+  }
+
+  const fieldsForStep1 = formFields.filter(
+    (field) => field.interface_type !== "password"
+  );
+  console.log("Step 1 Fields:", fieldsForStep1);
+
+  const fieldsForStep2 = formFields.filter(
+    (field) => field.interface_type === "password"
+  );
+  console.log("Step 2 Fields:", fieldsForStep2);
+
   return (
-    <div className="flex items-center justify-center min-h-svh px-10 sm:px-5  bg-gray-100">
-      <div className="hidden md:flex md:w-1/2 lg:w-2/5 justify-center items-center">
-        <Image src={Loginimg} alt="Login" className="w-3/4 h-auto" />
-      </div>
+    <div className="flex flex-col items-center justify-center  my-10 px-10">
+      <div className="w-full max-w-4xl p-6 bg-gray-50 rounded-2xl">
+        <div className="w-full max-w-4xl p-6 bg-gray-50 rounded-2xl ">
+          <h1 className="text-center text-2xl font-bold">Register Form</h1>
 
-      <div className="w-full max-w-md bg-white p-8 rounded-lg  md:w-1/2 lg:w-2/5">
-      <h1 className="text-center text-2xl font-bold">Register Form</h1>
+          <ProgressBar currentStep={step} />
+          {step === 1 && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {fieldsForStep1.map((field) => (
+                  <div key={field.column_name} className="relative">
+                    <InputField
+                      name={field.column_name}
+                      type={field.interface_type}
+                      placeholder={field.column_label}
+                      value={formData[field.column_name] || ""}
+                      onChange={handleChange}
+                      required
+                      label={field.column_label}
+                      errorMessage=""
+                    />
 
-      <div className="grid grid-cols-1 gap-5">
-        {formFields.map((field, index) => (
-          <div key={field.column_name} className="relative">
-            <InputField
-              name={field.column_name}
-              type={
-                field.interface_type === "password"
-                  ? showPassword[index]
-                    ? "text"
-                    : "password"
-                  : field.interface_type
-              }
-              placeholder={field.column_label}
-              value={formData[field.column_name] || ""}
-              onChange={handleChange}
-              required
-              label={field.column_label}
-              errorMessage=""
-            />
-            {field.interface_type === "password" && (
-              <button
-                type="button"
-                onClick={() => togglePassword(index)}
-                className="absolute right-3 top-11 text-gray-600"
-              >
-                {showPassword[index] ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            )}
-            {formErrors[field.column_name] &&
-              formErrors[field.column_name].map((errMsg, index) => (
-                <p key={index} className="text-red-500 text-xl mt-1 ">
-                  {errMsg}
-                </p>
-              ))}
-          </div>
-        ))}
-      </div>
+                    {formErrors[field.column_name] &&
+                      formErrors[field.column_name].map((errMsg, index) => (
+                        <p key={index} className="text-red-500 text-xl mt-1 ">
+                          {errMsg}
+                        </p>
+                      ))}
+                  </div>
+                ))}
+              </div>
+              {message && typeof message === "string" && (
+                <div
+                  className={`mt-3 p-2 rounded text-white flex text-center justify-center ${
+                    message.includes("successful")
+                      ? "bg-green-500"
+                      : "bg-red-500"
+                  }`}
+                >
+                  <p>{message}</p>
+                </div>
+              )}
 
-      {message && typeof message === "string" && (
-        <div
-          className={`mt-3 p-2 rounded text-white flex text-center justify-center ${
-            message.includes("successful") ? "bg-green-500" : "bg-red-500"
-          }`}
-        >
-          <p>{message}</p>
+              <div className="flex justify-center mt-4 w-full">
+                <Button
+                  label="Submit"
+                  onClick={nextStep}
+                  size="medium"
+                  variant="primary"
+                  className="rounded-md"
+                />
+              </div>
+              {/* </div>  */}
+            </>
+          )}
+          {step === 2 && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {fieldsForStep2.map((field, index) => (
+                  <div key={field.column_name} className="relative">
+                    <InputField
+                      name={field.column_name}
+                      type={showPassword[index] ? "text" : "password"}
+                      placeholder={field.column_label}
+                      value={formData[field.column_name] || ""}
+                      onChange={handleChange}
+                      required
+                      label={field.column_label}
+                      errorMessage=""
+                    />
+                    {field.interface_type === "password" && (
+                      <button
+                        type="button"
+                        onClick={() => togglePassword(index)}
+                        className="absolute right-3 top-11 text-gray-600"
+                      >
+                        {showPassword[index] ? (
+                          <EyeOff size={20} />
+                        ) : (
+                          <Eye size={20} />
+                        )}
+                      </button>
+                    )}
+                    {formErrors[field.column_name] &&
+                      formErrors[field.column_name].map((errMsg, index) => (
+                        <p key={index} className="text-red-500 text-xl mt-1 ">
+                          {errMsg}
+                        </p>
+                      ))}
+                  </div>
+                ))}
+                {/* </div> */}
+                {message && typeof message === "string" && (
+                  <div
+                    className={`mt-3 p-2 rounded text-white flex text-center justify-center ${
+                      message.includes("successful")
+                        ? "bg-green-500"
+                        : "bg-red-500"
+                    }`}
+                  >
+                    <p>{message}</p>
+                  </div>
+                )}
+                <div className="flex justify-between mt-4">
+                  <Button label="Back" onClick={prevStep} variant="secondary" />
+                  <Button label="Next" onClick={nextStep} variant="primary" />
+                </div>
+              </div>
+            </>
+          )}
+          {step === 3 && (
+            <>
+              <div className="flex justify-center mt-4 w-full">
+                <Button
+                  label="Submit"
+                  onClick={handleSubmit}
+                  size="medium"
+                  variant="primary"
+                  className="rounded-md"
+                />
+              </div>
+            </>
+          )}
         </div>
-      )}
-
-      <div className="mt-3 flex items-center justify-center">
-        <Button label="Submit" variant="primary" onClick={handleSubmit} />
-      </div>
       </div>
     </div>
-    
   );
 }

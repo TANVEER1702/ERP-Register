@@ -1,11 +1,11 @@
-import React from 'react'
+import Navbar from "../../layout/Navbar";
 
-const page = () => {
+const Dashboard = () => {
   return (
     <div>
-      <h1 className='flex justify-center text-center items-center h-screen text-4xl font-bold'>Welcome To Kunxite</h1>
+      <Navbar />
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Dashboard;

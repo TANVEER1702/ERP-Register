@@ -1,6 +1,6 @@
 import { Check } from "lucide-react"; // Import Check icon from react-icons
 
-const steps = ["Register", "Verify your e-mail", "Access all resources"];
+const steps = ["Register", "E-mail Verify", "Access all"];
 
 export default function ProgressBar({ currentStep }:{currentStep:number}) {
   return (
@@ -23,7 +23,7 @@ export default function ProgressBar({ currentStep }:{currentStep:number}) {
             </div>
 
             {/* Step Name Below */}
-            <div className="mt-2 text-sm hidden md:flex text-center">
+            <div className="mt-2 text-sm hidden md:flex text-center w-fit">
               {step}
             </div>
           </div>
@@ -40,72 +40,3 @@ export default function ProgressBar({ currentStep }:{currentStep:number}) {
     </div>
   );
 }
-
-// "use client";
-// import React from "react";
-// import { Check } from "lucide-react";
-
-// interface ProgressBarProps {
-//   step: number;
-//   totalSteps: number;
-// }
-
-// const stepNames: { [key: number]: string } = {
-//   1: "Register",
-//   2: "Verify your e-mail",
-//   3: "Access all resources",
-// };
-
-// const ProgressBar: React.FC<ProgressBarProps> = ({ step, totalSteps }) => {
-//   return (
-//     <div className="relative flex items-center  w-full mb-8 px-5">
-//       {/* Connecting Progress Line */}
-//       <div className="absolute top-3 sm:top-4 flex items-center justify-center w-3/5">
-//       <div className="relative left-14 w-full  h-1 bg-gray-400 rounded-full ">
-//       <div
-//         className=" absolute h-1 bg-green-500 rounded-full"
-//         style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
-//       >
-//       </div>
-//       </div>
-//       </div>
-//       {/* Steps */}
-//       {Array.from({ length: totalSteps }, (_, index) => {
-//         const isCompleted = index < step - 1;
-//         const isActive = index === step - 1;
-
-//         return (
-//           <div
-//             key={index}
-//             className="relative flex left-0 flex-col items-center  justify-around w-full"
-//           >
-//             {/* Circular Step */}
-//             <div
-//               className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full border-2 text-lg font-bold transition-all duration-2000
-//               ${
-//                 isCompleted
-//                   ? "bg-green-600 border-green-600 text-white"
-//                   : isActive
-//                   ? "border-blue-500 text-white bg-blue-500"
-//                   : "border-gray-600 text-gray-600 bg-white"
-//               }`}
-
-//             >
-//               {isCompleted ? <Check size={22} /> : index + 1}
-//             </div>
-
-//             {/* Step Name */}
-//             <span
-//               className="md:text-sm  text-xs flex text-center   mt-2 text-gray-800"
-
-//             >
-//               {stepNames[index + 1]}
-//             </span>
-//           </div>
-//         );
-//       })}
-//     </div>
-//   );
-// };
-
-// export default ProgressBar;

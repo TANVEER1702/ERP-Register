@@ -11,9 +11,16 @@ import { Eye, EyeOff } from "lucide-react";
 interface Loginfield {
   column_name: string;
   column_label: string;
-  interface_type?: "text" | "password" | "number" | "email" | "tel" | "checkbox" | "radio" | "select"; // Optional field
+  interface_type?:
+    | "text"
+    | "password"
+    | "number"
+    | "email"
+    | "tel"
+    | "checkbox"
+    | "radio"
+    | "select"; 
 }
-
 
 export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
   const [formData, setFormData] = useState<Record<string, string>>(() =>
@@ -66,7 +73,7 @@ export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
       } else {
         setErrors(data.massage || "Invalid Email or Password");
       }
-    } catch{
+    } catch {
       setErrors("Somthing went wrong. Please try again letter");
     }
   };
@@ -74,7 +81,11 @@ export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
   return (
     <div className="flex items-center justify-center min-h-svh px-10 sm:px-5  bg-gray-100">
       <div className="hidden md:flex md:w-1/2 lg:w-2/5 justify-center items-center">
-        <Image src={Loginimg} alt="Login" className="w-3/4 h-auto mix-blend-multiply" />
+        <Image
+          src={Loginimg}
+          alt="Login"
+          className="w-3/4 h-auto mix-blend-multiply"
+        />
       </div>
 
       <div className="w-full max-w-md bg-white p-8 rounded-lg  md:w-1/2 lg:w-2/5">
@@ -108,7 +119,9 @@ export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
                 {showPassword[index] ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             )}
-             {errors && <p className="text-red-500 text-sm text-center">{errors}</p>}
+            {errors && (
+              <p className="text-red-500 text-sm text-center">{errors}</p>
+            )}
           </div>
         ))}
         <div className="flex justify-center w-full mt-4">
