@@ -7,7 +7,7 @@ import { Button } from "@/components/buttons";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import ProgressBar from "../CircleProgressBar";
-import PhoneInput, {CountryData} from "react-phone-input-2";
+import PhoneInput, { CountryData } from "react-phone-input-2";
 
 interface FormField {
   column_name: string;
@@ -115,8 +115,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
       setMessage("Something went wrong!");
     }
   };
-  console.log("message",formErrors);
-
+  console.log("message", formErrors);
 
   function nextStep(): void {
     const errors: { [key: string]: string[] } = {};
@@ -126,7 +125,6 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
         errors[field.column_name] = [`${field.column_label} is required`];
       }
     });
-    
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -179,8 +177,6 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     (field) => field.interface_type === "password"
   );
 
-  
-  
   return (
     <div className="flex flex-col items-center justify-center  my-10 px-10">
       <div className="w-full max-w-4xl p-6 bg-gray-50 rounded-2xl">
@@ -193,10 +189,9 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {fieldsForStep1.map((field) => (
                   <div key={field.column_name} className="relative">
-                    
                     {field.column_name === "users_phone" ? (
                       <>
-                        <label>{field.column_label}</label>
+                        <label className="text-sm">{field.column_label}</label>
                         <PhoneInput
                           country={"in"}
                           value={formData["users_phone"] || ""}
@@ -208,13 +203,13 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                               users_phone_code: country?.dialCode || "", // Store country code
                             }));
                           }}
-                          containerStyle={{ width: "100%" }}
+                          containerStyle={{ width: "100%", marginTop: "8px" }}
                           inputStyle={{
                             width: "100%",
                             height: "40px",
                             borderRadius: "6px",
                           }}
-                          buttonClass="w-12 h-10 flex items-center justify-center border rounded"
+                          buttonClass="w-12 h-10  flex items-center justify-center border rounded"
                         />
                       </>
                     ) : (
@@ -259,10 +254,8 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                   variant="primary"
                   className="rounded-md"
                 />
-                 
               </div>
               {/* </div>  */}
-              
             </>
           )}
           {step === 2 && (
