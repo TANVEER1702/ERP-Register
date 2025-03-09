@@ -124,7 +124,6 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     fieldsForStep1.forEach((field) => {
       if (!formData[field.column_name]) {
         errors[field.column_name] = [`${field.column_label} is required`];
-        formErrors;
       }
     });
     
