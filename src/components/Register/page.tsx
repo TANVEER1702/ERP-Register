@@ -7,7 +7,7 @@ import { Button } from "@/components/buttons";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import ProgressBar from "../CircleProgressBar";
-import PhoneInputs from "../phoneInput/page";
+import PhoneInput, {CountryData} from "react-phone-input-2";
 
 interface FormField {
   column_name: string;
@@ -31,6 +31,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
       return acc;
     }, {} as Record<string, string>)
   );
+  console.log("okk", formFields);
 
   const [showPassword, setshowPassword] = useState<{ [key: number]: boolean }>(
     {}
@@ -74,11 +75,12 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
           },
           body: JSON.stringify({
             ...formData,
-            users_number: String(formData?.users_number),
+            users_phone: String(formData?.users_phone),
           }),
         }
       );
       const resultData = await res.json();
+      console.log("Response from Backend:", resultData);
       if (res.ok) {
         localStorage.setItem("token", resultData.token);
         setMessage("Registration successful! Redirecting...");
@@ -113,16 +115,19 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
       setMessage("Something went wrong!");
     }
   };
+  console.log("message",formErrors);
+
 
   function nextStep(): void {
     const errors: { [key: string]: string[] } = {};
 
-    
     fieldsForStep1.forEach((field) => {
       if (!formData[field.column_name]) {
         errors[field.column_name] = [`${field.column_label} is required`];
+        formErrors;
       }
     });
+    
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -130,24 +135,29 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     }
     if (step < totalSteps) setStep(step + 1);
   }
-  
+
   function nextStep1(): void {
     const errors: { [key: string]: string[] } = {};
 
-    
     fieldsForStep2.forEach((field) => {
       if (!formData[field.column_name]) {
-        errors[field.column_name] = [`${field.column_label} is required`];
+        // formErrors;
       }
     });
-   const passwordField = fieldsForStep2.find(f => f.interface_type === "password" && f.column_name === "users_password");
-const confirmPasswordField = fieldsForStep2.find(f => f.interface_type === "password" && f.column_name === "custom_column_12");
+    const passwordField = fieldsForStep2.find(
+      (f) =>
+        f.interface_type === "password" && f.column_name === "users_password"
+    );
+    const confirmPasswordField = fieldsForStep2.find(
+      (f) =>
+        f.interface_type === "password" && f.column_name === "custom_column_12"
+    );
 
-if (passwordField && confirmPasswordField) {
-  if (formData["users_password"] !== formData["custom_column_12"]) {
-    errors["custom_column_12"] = ["Passwords do not match"];
-  }
-}
+    if (passwordField && confirmPasswordField) {
+      if (formData["users_password"] !== formData["custom_column_12"]) {
+        errors["custom_column_12"] = ["Passwords do not match"];
+      }
+    }
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -165,13 +175,13 @@ if (passwordField && confirmPasswordField) {
   const fieldsForStep1 = formFields.filter(
     (field) => field.interface_type !== "password"
   );
- 
 
   const fieldsForStep2 = formFields.filter(
     (field) => field.interface_type === "password"
   );
-  
 
+  
+  
   return (
     <div className="flex flex-col items-center justify-center  my-10 px-10">
       <div className="w-full max-w-4xl p-6 bg-gray-50 rounded-2xl">
@@ -181,22 +191,24 @@ if (passwordField && confirmPasswordField) {
           <ProgressBar currentStep={step} />
           {step === 1 && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-               
-                  {fieldsForStep1.map((field) => (
-                    <div key={field.column_name} className="relative">
-                      {field.column_name === "users_phone" ? (
-                        
-                        <PhoneInputs
-                        label ={field.column_label}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {fieldsForStep1.map((field) => (
+                  <div key={field.column_name} className="relative">
+                    
+                    {field.column_name === "users_phone" ? (
+                      <>
+                        <label>{field.column_label}</label>
+                        <PhoneInput
                           country={"in"}
-                          value={formData[field.column_name] || ""}
-                          onChange={(phone) =>
+                          value={formData["users_phone"] || ""}
+                          onChange={(phone, CountryData) => {
+                            const country = CountryData as CountryData;
                             setFormData((prev) => ({
                               ...prev,
-                              [field.column_name]: phone,
-                            }))
-                          }
+                              users_phone: phone, // Store full phone number
+                              users_phone_code: country?.dialCode || "", // Store country code
+                            }));
+                          }}
                           containerStyle={{ width: "100%" }}
                           inputStyle={{
                             width: "100%",
@@ -205,29 +217,28 @@ if (passwordField && confirmPasswordField) {
                           }}
                           buttonClass="w-12 h-10 flex items-center justify-center border rounded"
                         />
-                      ) : (
-                        <InputField
-                          name={field.column_name}
-                          type={field.interface_type}
-                          placeholder={field.column_label}
-                          value={formData[field.column_name] || ""}
-                          onChange={handleChange}
-                          required
-                          label={field.column_label}
-                          errorMessage=""
-                        />
-                      )}
-                      
-                      {formErrors[field.column_name] &&
-                        formErrors[field.column_name].map((errMsg, index) => (
-                          <p key={index} className="text-red-500 text-sm mt-1">
-                            {errMsg}
-                          </p>
-                        ))}
-                    </div>
-                  ))}
-                  
-                
+                      </>
+                    ) : (
+                      <InputField
+                        name={field.column_name}
+                        type={field.interface_type}
+                        placeholder={field.column_label}
+                        value={formData[field.column_name] || ""}
+                        onChange={handleChange}
+                        required
+                        label={field.column_label}
+                        errorMessage=""
+                      />
+                    )}
+
+                    {formErrors[field.column_name] &&
+                      formErrors[field.column_name].map((errMsg, index) => (
+                        <p key={index} className="text-red-500 text-sm mt-1">
+                          {errMsg}
+                        </p>
+                      ))}
+                  </div>
+                ))}
               </div>
               {message && typeof message === "string" && (
                 <div
@@ -249,8 +260,10 @@ if (passwordField && confirmPasswordField) {
                   variant="primary"
                   className="rounded-md"
                 />
+                 
               </div>
               {/* </div>  */}
+              
             </>
           )}
           {step === 2 && (
