@@ -8,6 +8,7 @@ import Image from "next/image";
 import Loginimg from "../../../public/LoginSvg.jpg";
 import { Eye, EyeOff } from "lucide-react";
 
+
 interface Loginfield {
   column_name: string;
   column_label: string;
@@ -68,7 +69,7 @@ export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
       );
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("Token", data.token);
+        document.cookie = `Token=${data.token}; path=/; max-age=86400`;
         router.push("/dashboard");
       } else {
         setErrors(data.massage || "Invalid Email or Password");
@@ -132,12 +133,15 @@ export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
             className="w-full"
           />
         </div>
-        <div className="flex justify-center gap-5 text-sm mt-3">
+        <div className="flex justify-around gap-5 text-sm mt-3">
           <Link href="/" className="text-blue-500 hover:underline">
             Forgot Password?
           </Link>
           <Link href="/" className="text-blue-500 hover:underline">
             Continue With SSO
+          </Link>
+          <Link href="/Register" className="text-blue-500 hover:underline">
+            Register Now
           </Link>
         </div>
       </div>

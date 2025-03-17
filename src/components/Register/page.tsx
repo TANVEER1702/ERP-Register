@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import ProgressBar from "../CircleProgressBar";
 import PhoneInput, { CountryData } from "react-phone-input-2";
+import Link from "next/link";
+// import { countries } from "countries-list";
 
 interface FormField {
   column_name: string;
@@ -22,6 +24,7 @@ interface FormField {
     | "radio"
     | "select";
   ordering_number?: number;
+  active?: boolean;
 }
 
 export default function Form({ formFields }: { formFields: FormField[] }) {
@@ -31,7 +34,6 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
       return acc;
     }, {} as Record<string, string>)
   );
-  console.log("okk", formFields);
 
   const [showPassword, setshowPassword] = useState<{ [key: number]: boolean }>(
     {}
@@ -115,7 +117,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
       setMessage("Something went wrong!");
     }
   };
-  console.log("message", formErrors);
+  console.log(formData);
 
   function nextStep(): void {
     const errors: { [key: string]: string[] } = {};
@@ -162,7 +164,6 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     }
     if (step < totalSteps) setStep(step + 1);
   }
-
   const totalSteps = 3;
 
   function prevStep(): void {
@@ -170,15 +171,15 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
   }
 
   const fieldsForStep1 = formFields.filter(
-    (field) => field.interface_type !== "password"
+    (field) => field.interface_type !== "password" && field.active === true
   );
 
   const fieldsForStep2 = formFields.filter(
-    (field) => field.interface_type === "password"
+    (field) => field.interface_type === "password" && field.active === true
   );
 
   return (
-    <div className="flex flex-col items-center justify-center  my-10 px-10">
+    <div className="flex flex-col items-center justify-center  my-2 px-10">
       <div className="w-full max-w-4xl p-6 bg-gray-50 rounded-2xl">
         <div className="w-full max-w-4xl p-6 bg-gray-50 rounded-2xl ">
           <h1 className="text-center text-2xl font-bold">Register Form</h1>
@@ -186,7 +187,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
           <ProgressBar currentStep={step} />
           {step === 1 && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {fieldsForStep1.map((field) => (
                   <div key={field.column_name} className="relative">
                     {field.column_name === "users_phone" ? (
@@ -199,8 +200,8 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                             const country = CountryData as CountryData;
                             setFormData((prev) => ({
                               ...prev,
-                              users_phone: phone, // Store full phone number
-                              users_phone_code: country?.dialCode || "", // Store country code
+                              users_phone: phone,
+                              users_phone_code: country?.dialCode || "",
                             }));
                           }}
                           containerStyle={{ width: "100%", marginTop: "8px" }}
@@ -245,10 +246,41 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                   <p>{message}</p>
                 </div>
               )}
+              <div className="mt-5 text-xs md:text-sm">
+                <h1>
+                  SAP will use the data provided hereunder in accordance with
+                  the{" "}
+                  <Link href={""} className="underline text-blue-900">
+                    Privacy Statement.
+                  </Link>
+                </h1>
+              
+                <h1>
+                  I have read and understood the Terms and Conditions of{" "}
+                  <Link href={""} className="underline text-blue-500">
+                    SAP.com
+                  </Link>{" "}
+                  *
+                </h1>
+              
+                <h1>
+                  This site is protected by reCAPTCHA and the Google{" "}
+                  <Link href={""} className="underline text-blue-500">
+                    {" "}
+                    Privacy Policy{" "}
+                  </Link>{" "}
+                  and{" "}
+                  <Link href={""} className="underline text-blue-500">
+                    {" "}
+                    Terms of Service
+                  </Link>{" "}
+                  apply.
+                </h1>
+              </div>
 
               <div className="flex justify-center mt-4 w-full">
                 <Button
-                  label="Submit"
+                  label="Next"
                   onClick={nextStep}
                   size="medium"
                   variant="primary"
@@ -260,7 +292,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
           )}
           {step === 2 && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {fieldsForStep2.map((field, index) => (
                   <div key={field.column_name} className="relative">
                     <InputField
@@ -306,15 +338,27 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                     <p>{message}</p>
                   </div>
                 )}
-                <div className="flex justify-between mt-4">
-                  <Button label="Back" onClick={prevStep} variant="secondary" />
-                  <Button label="Next" onClick={nextStep1} variant="primary" />
-                </div>
+              </div>
+              <div className="flex justify-around mt-4">
+                <Button label="Back" onClick={prevStep} variant="secondary" />
+                <Button label="Next" onClick={nextStep1} variant="primary" />
               </div>
             </>
           )}
           {step === 3 && (
             <>
+              {" "}
+              {message && typeof message === "string" && (
+                <div
+                  className={`mt-3 p-2 rounded  flex text-center justify-center ${
+                    message.includes("successful")
+                      ? "text-green-500"
+                      : "text-red-600"
+                  }`}
+                >
+                  <p>{message}</p>
+                </div>
+              )}
               <div className="flex justify-center mt-4 w-full">
                 <Button
                   label="Submit"

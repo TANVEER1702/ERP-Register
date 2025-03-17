@@ -3,7 +3,7 @@ import React from "react";
 
 async function getloginField() {
   const Response = await fetch(
-    "https://erp-backend-kunxite.vercel.app/api/screen/user_login",
+    "https://erp-backend-kunxite.vercel.app/api/structure-table/screen/login",
     { method: "get" }
   );
   const data = await Response.json();
@@ -15,6 +15,7 @@ const page = async() => {
   return (
     <div>
       <Login Loginfield={Loginfield} />
+    
     </div>
   );
 };
