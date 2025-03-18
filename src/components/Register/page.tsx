@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { InputField } from "@/components/inputField";
 import { Button } from "@/components/buttons";
 import { useRouter } from "next/navigation";
@@ -9,8 +9,6 @@ import { Eye, EyeOff } from "lucide-react";
 import ProgressBar from "../CircleProgressBar";
 import PhoneInput, { CountryData } from "react-phone-input-2";
 import Link from "next/link";
-import Select from "react-select/base";
-import { SingleValue } from "react-select";
 import { AjaxSearchDropdown } from "../ajaxSearchDropDown";
 
 interface FormField {
@@ -50,9 +48,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     return res.json();
   };
 
-  const handleInputChange = (newValue: string) => {
-    fetchCountries(newValue);
-  };
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -155,36 +151,36 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
   }
   console.log("hello", message);
 
-  function nextStep1(): void {
-    const errors: { [key: string]: string[] } = {};
+//   function nextStep1(): void {
+//     const errors: { [key: string]: string[] } = {};
 
-    fieldsForStep2.forEach((field) => {
-      if (!formData[field.column_name]) {
-        formErrors;
-      }
-    });
-    const passwordField = fieldsForStep2.find(
-      (f) =>
-        f.interface_type === "password" && f.column_name === "users_password"
-    );
-    const confirmPasswordField = fieldsForStep2.find(
-      (f) =>
-        f.interface_type === "password" && f.column_name === "custom_column_10"
-    );
+//     fieldsForStep2.forEach((field) => {
+//       if (!formData[field.column_name]) {
+//         formErrors;
+//       }
+//     });
+//     const passwordField = fieldsForStep2.find(
+//       (f) =>
+//         f.interface_type === "password" && f.column_name === "users_password"
+//     );
+//     const confirmPasswordField = fieldsForStep2.find(
+//       (f) =>
+//         f.interface_type === "password" && f.column_name === "custom_column_10"
+//     );
 
-    if (passwordField && confirmPasswordField) {
-      if (formData["users_password"] !== formData["custom_column_12"]) {
-        errors["custom_column_12"] = ["Passwords do not match"];
-      }
-    }
-console.log(formData);
+//     if (passwordField && confirmPasswordField) {
+//       if (formData["users_password"] !== formData["custom_column_12"]) {
+//         errors["custom_column_12"] = ["Passwords do not match"];
+//       }
+//     }
+// console.log(formData);
 
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
-    if (step < totalSteps) setStep(step + 1);
-  }
+//     if (Object.keys(errors).length > 0) {
+//       setFormErrors(errors);
+//       return;
+//     }
+//     if (step < totalSteps) setStep(step + 1);
+//   }
   const totalSteps = 2;
 
   function prevStep(): void {
