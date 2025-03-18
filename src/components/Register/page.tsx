@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { InputField } from "@/components/inputField";
 import { Button } from "@/components/buttons";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,9 @@ import { Eye, EyeOff } from "lucide-react";
 import ProgressBar from "../CircleProgressBar";
 import PhoneInput, { CountryData } from "react-phone-input-2";
 import Link from "next/link";
-// import { countries } from "countries-list";
+import Select from "react-select/base";
+import { SingleValue } from "react-select";
+import { AjaxSearchDropdown } from "../ajaxSearchDropDown";
 
 interface FormField {
   column_name: string;
@@ -43,6 +45,15 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
+  const fetchCountries = async (query: string) => {
+    const res = await fetch(`/api/countries?query=${query}`);
+    return res.json();
+  };
+
+  const handleInputChange = (newValue: string) => {
+    fetchCountries(newValue);
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -65,6 +76,15 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
       [index]: !prev[index],
     }));
   };
+  const handleSelect = (selectedItem: {
+    id: string | number;
+    name: string;
+  }) => {
+    setFormData((prev) => ({
+      ...prev,
+      country_name: selectedItem.name, // Storing selected country name in formData
+    }));
+  };
 
   const handleSubmit = async () => {
     try {
@@ -78,6 +98,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
           body: JSON.stringify({
             ...formData,
             users_phone: String(formData?.users_phone),
+            country_name: formData?.country_name || "",
           }),
         }
       );
@@ -89,7 +110,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
 
         setTimeout(() => {
           router.push("/login");
-        }, 2000);
+        });
       } else {
         if (
           typeof resultData.message === "object" &&
@@ -117,8 +138,6 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
       setMessage("Something went wrong!");
     }
   };
-  console.log(formData);
-
   function nextStep(): void {
     const errors: { [key: string]: string[] } = {};
 
@@ -134,13 +153,14 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     }
     if (step < totalSteps) setStep(step + 1);
   }
+  console.log("hello", message);
 
   function nextStep1(): void {
     const errors: { [key: string]: string[] } = {};
 
     fieldsForStep2.forEach((field) => {
       if (!formData[field.column_name]) {
-        // formErrors;
+        formErrors;
       }
     });
     const passwordField = fieldsForStep2.find(
@@ -149,7 +169,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     );
     const confirmPasswordField = fieldsForStep2.find(
       (f) =>
-        f.interface_type === "password" && f.column_name === "custom_column_12"
+        f.interface_type === "password" && f.column_name === "custom_column_10"
     );
 
     if (passwordField && confirmPasswordField) {
@@ -157,6 +177,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
         errors["custom_column_12"] = ["Passwords do not match"];
       }
     }
+console.log(formData);
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -164,7 +185,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     }
     if (step < totalSteps) setStep(step + 1);
   }
-  const totalSteps = 3;
+  const totalSteps = 2;
 
   function prevStep(): void {
     if (step > 1) setStep(step - 1);
@@ -189,7 +210,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {fieldsForStep1.map((field) => (
-                  <div key={field.column_name} className="relative">
+                  <div key={field.column_name} className="relative ">
                     {field.column_name === "users_phone" ? (
                       <>
                         <label className="text-sm">{field.column_label}</label>
@@ -210,9 +231,18 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                             height: "40px",
                             borderRadius: "6px",
                           }}
-                          buttonClass="w-12 h-10  flex items-center justify-center border rounded"
+                          inputClass=" focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          buttonClass="w-12 h-10  flex items-center justify-center border rounded  "
                         />
                       </>
+                    ) : field.column_name === "country_name" ? (
+                      <AjaxSearchDropdown
+                        label={field.column_label}
+                        fetchData={fetchCountries}
+                        onSelect={handleSelect}
+                        placeholder={field.column_label}
+                        className="mt-2 "
+                      />
                     ) : (
                       <InputField
                         name={field.column_name}
@@ -223,6 +253,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                         required
                         label={field.column_label}
                         errorMessage=""
+                        className="focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     )}
 
@@ -235,6 +266,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                   </div>
                 ))}
               </div>
+
               {message && typeof message === "string" && (
                 <div
                   className={`mt-3 p-2 rounded text-white flex text-center justify-center ${
@@ -254,7 +286,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                     Privacy Statement.
                   </Link>
                 </h1>
-              
+
                 <h1>
                   I have read and understood the Terms and Conditions of{" "}
                   <Link href={""} className="underline text-blue-500">
@@ -262,7 +294,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                   </Link>{" "}
                   *
                 </h1>
-              
+
                 <h1>
                   This site is protected by reCAPTCHA and the Google{" "}
                   <Link href={""} className="underline text-blue-500">
@@ -287,7 +319,6 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                   className="rounded-md"
                 />
               </div>
-              {/* </div>  */}
             </>
           )}
           {step === 2 && (
@@ -304,6 +335,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                       required
                       label={field.column_label}
                       errorMessage=""
+                      className="focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {field.interface_type === "password" && (
                       <button
@@ -338,16 +370,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                     <p>{message}</p>
                   </div>
                 )}
-              </div>
-              <div className="flex justify-around mt-4">
-                <Button label="Back" onClick={prevStep} variant="secondary" />
-                <Button label="Next" onClick={nextStep1} variant="primary" />
-              </div>
-            </>
-          )}
-          {step === 3 && (
-            <>
-              {" "}
+              </div>{" "}
               {message && typeof message === "string" && (
                 <div
                   className={`mt-3 p-2 rounded  flex text-center justify-center ${
@@ -359,7 +382,8 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                   <p>{message}</p>
                 </div>
               )}
-              <div className="flex justify-center mt-4 w-full">
+              <div className="flex justify-between mt-4">
+                <Button label="Back" onClick={prevStep} variant="secondary" />
                 <Button
                   label="Submit"
                   onClick={handleSubmit}

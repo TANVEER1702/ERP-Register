@@ -8,7 +8,6 @@ import Image from "next/image";
 import Loginimg from "../../../public/LoginSvg.jpg";
 import { Eye, EyeOff } from "lucide-react";
 
-
 interface Loginfield {
   column_name: string;
   column_label: string;
@@ -20,7 +19,7 @@ interface Loginfield {
     | "tel"
     | "checkbox"
     | "radio"
-    | "select"; 
+    | "select";
 }
 
 export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
@@ -110,6 +109,7 @@ export default function Login({ Loginfield }: { Loginfield: Loginfield[] }) {
               onChange={handleChange}
               required
               errorMessage=""
+              className="focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {field.interface_type === "password" && (
               <button

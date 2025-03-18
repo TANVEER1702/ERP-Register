@@ -1,6 +1,6 @@
-import { Check } from "lucide-react"; // Import Check icon from react-icons
+import { Check } from "lucide-react";
 
-const steps = ["Register", "E-mail Verify", "Access all"];
+const steps = ["Register", "E-mail Verify"];
 
 export default function ProgressBar({ currentStep }: { currentStep: number }) {
   return (
@@ -22,14 +22,14 @@ export default function ProgressBar({ currentStep }: { currentStep: number }) {
               )}
             </div>
 
-            <div className="mt-2 text-sm hidden md:flex text-center w-fit">
+            <div className="mt-2 text-sm  md:flex text-center w-fit">
               {step}
             </div>
           </div>
 
           {index < steps.length - 1 && (
             <div
-              className={`h-1 w-3 md:mb-5  sm:w-24 md:w-36 transition-all duration-1000 mx-3 md:mx-0
+              className={`h-1 w-10 mb-5 md:mb-5  sm:w-24 md:w-52 transition-all duration-1000 md:mx-0
                 ${index + 1 < currentStep ? "bg-green-500" : "bg-gray-400"}`}
             ></div>
           )}
