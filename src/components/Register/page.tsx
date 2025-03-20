@@ -78,11 +78,16 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
   }) => {
     setFormData((prev) => ({
       ...prev,
-      country_name: selectedItem.name, // Storing selected country name in formData
+      country_name: selectedItem.name,
     }));
   };
 
   const handleSubmit = async () => {
+    if(formData["users_password"] !== formData["custom_column_10"]){
+      setMessage("Password and Confirm Password not match"); 
+    return;
+  }
+  setMessage("");
     try {
       const res = await fetch(
         "https://erp-backend-kunxite.vercel.app/api/users/register",
@@ -107,6 +112,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
         setTimeout(() => {
           router.push("/login");
         });
+      
       } else {
         if (
           typeof resultData.message === "object" &&
@@ -149,7 +155,6 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
     }
     if (step < totalSteps) setStep(step + 1);
   }
-  console.log("hello", message);
 
 //   function nextStep1(): void {
 //     const errors: { [key: string]: string[] } = {};
@@ -159,20 +164,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
 //         formErrors;
 //       }
 //     });
-//     const passwordField = fieldsForStep2.find(
-//       (f) =>
-//         f.interface_type === "password" && f.column_name === "users_password"
-//     );
-//     const confirmPasswordField = fieldsForStep2.find(
-//       (f) =>
-//         f.interface_type === "password" && f.column_name === "custom_column_10"
-//     );
-
-//     if (passwordField && confirmPasswordField) {
-//       if (formData["users_password"] !== formData["custom_column_12"]) {
-//         errors["custom_column_12"] = ["Passwords do not match"];
-//       }
-//     }
+//     
 // console.log(formData);
 
 //     if (Object.keys(errors).length > 0) {
@@ -233,7 +225,8 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                       </>
                     ) : field.column_name === "country_name" ? (
                       <AjaxSearchDropdown
-                        label={field.column_label}
+                        
+                        label={field.column_name}
                         fetchData={fetchCountries}
                         onSelect={handleSelect}
                         placeholder={field.column_label}
@@ -274,7 +267,7 @@ export default function Form({ formFields }: { formFields: FormField[] }) {
                   <p>{message}</p>
                 </div>
               )}
-              <div className="mt-5 text-xs md:text-sm">
+              <div className="mt-5 text-sm md:text-base">
                 <h1>
                   SAP will use the data provided hereunder in accordance with
                   the{" "}
